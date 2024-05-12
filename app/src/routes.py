@@ -76,7 +76,20 @@ async def update_event(event_id: int, event_update: Event):
 
 @router.delete("/events/{event_id}")
 async def delete_event(event_id: int):
-    pass
+    events = EventFileManager.read_events_from_file()
+    found_index = False
+
+    for e in events:
+        if e.get('id') == event_id:
+            events.remove(e)
+            found_index = True
+            break
+
+    if not found_index:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    EventFileManager.write_events_to_file(events)
+    return {"message": "Event deleted successfully"}
 
 
 @router.get("/events/joiners/multiple-meetings")
