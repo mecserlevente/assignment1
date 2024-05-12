@@ -15,11 +15,11 @@ async def get_all_events():
 async def get_events_by_filter(date: str = None, organizer: str = None, status: str = None, event_type: str = None):
     events = EventFileManager.read_events_from_file()
     filtered_events = [
-        event for event in events
-        if (date is None or event['date'] == date) and
-           (organizer is None or event['organizer', {}]['name'] == organizer) and
-           (status is None or event['status'] == status) and
-           (event_type is None or event['type'] == event_type)
+        e for e in events
+        if (date is None or e['date'] == date) and
+           (organizer is None or e['organizer', {}]['name'] == organizer) and
+           (status is None or e['status'] == status) and
+           (event_type is None or e['type'] == event_type)
     ]
     return filtered_events
 
@@ -45,7 +45,6 @@ async def create_event(event: Event):
     if already_exist_id:
         raise HTTPException(status_code=400, detail="Event with this id already exists")
     else:
-        event.id = len(events) + 1
         events.append(event.dict())
         EventFileManager.write_events_to_file(events)
         return event
