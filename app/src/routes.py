@@ -14,16 +14,24 @@ async def get_all_events():
 @router.get("/events/filter", response_model=List[Event])
 async def get_events_by_filter(date: str = None, organizer: str = None, status: str = None, event_type: str = None):
     events = EventFileManager.read_events_from_file()
-    filtered_events = []
-    for event in events:
-        if date == event.get("date") and organizer == event.get("organizer").get("name") and status == event.get("status") or event_type == event.get("type"):
-            filtered_events.append(event)
+    filtered_events = [
+        event for event in events
+        if (date is None or event['date'] == date) and
+           (organizer is None or event['organizer', {}]['name'] == organizer) and
+           (status is None or event['status'] == status) and
+           (event_type is None or event['type'] == event_type)
+    ]
     return filtered_events
 
 
 @router.get("/events/{event_id}", response_model=Event)
 async def get_event_by_id(event_id: int):
-    pass
+    events = EventFileManager.read_events_from_file()
+    event = next((event for event in events if event.get('id') == event_id), None)
+    if event is not None:
+        return event
+    else:
+        raise HTTPException(status_code=404, detail="Event not found")
 
 
 @router.post("/events", response_model=Event)
