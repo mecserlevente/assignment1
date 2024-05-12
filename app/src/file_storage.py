@@ -2,7 +2,7 @@ import json
 from typing import List
 
 class EventFileManager:
-    FILE_PATH = "events.json"
+    FILE_PATH = "event.json"
 
     @classmethod
     def read_events_from_file(cls) -> List[dict]:
