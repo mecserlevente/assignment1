@@ -13,7 +13,12 @@ async def get_all_events():
 
 @router.get("/events/filter", response_model=List[Event])
 async def get_events_by_filter(date: str = None, organizer: str = None, status: str = None, event_type: str = None):
-    pass
+    events = EventFileManager.read_events_from_file()
+    filtered_events = []
+    for event in events:
+        if date == event.get("date") and organizer == event.get("organizer").get("name") and status == event.get("status") or event_type == event.get("type"):
+            filtered_events.append(event)
+    return filtered_events
 
 
 @router.get("/events/{event_id}", response_model=Event)
