@@ -5,6 +5,21 @@ from .file_storage import EventFileManager
 
 router = APIRouter()
 
+class EventAnalyzer:
+    @staticmethod
+    def get_joiners_multiple_meetings_method(events: Event):
+        meetings = {}
+        for e in events:
+            for joiner in e.get('joiners', []):
+                joiner_email = joiner.get('name')
+                if joiner_email:
+                    if joiner_email in meetings:
+                        meetings[joiner_email] += 1
+                    else:
+                        meetings[joiner_email] = 1
+
+        return [lambda joiner: joiner for joiner, count in meetings.items() if count > 1]
+
 
 @router.get("/events", response_model=List[Event])
 async def get_all_events():
@@ -94,4 +109,6 @@ async def delete_event(event_id: int):
 
 @router.get("/events/joiners/multiple-meetings")
 async def get_joiners_multiple_meetings():
-    pass
+    events = EventFileManager.read_events_from_file()
+    joiners = EventAnalyzer.get_joiners_multiple_meetings_method(events)
+    return {"joiners": joiners}
