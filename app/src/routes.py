@@ -96,4 +96,8 @@ async def delete_event(event_id: int):
 async def get_joiners_multiple_meetings():
     events = EventFileManager.read_events_from_file()
     joiners = EventAnalyzer.get_joiners_multiple_meetings_method(events)
+    
+    if not joiners:
+        return {"message": "No joiners attending at least 2 meetings"}
+    
     return {"joiners": joiners}
